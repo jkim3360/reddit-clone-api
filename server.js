@@ -50,9 +50,28 @@ app.post('/register', (req, res) => {
       })
     })
     .catch(e => {
-      console.log(e)
+      console.error(e)
       res.sendStatus(500)
     })
+})
+
+app.get('/user', (req, res) => {
+  const token = req.cookies.token
+  console.log({ token })
+  const userInfo = jwt.verify(token, secret)
+
+  User.findById(userInfo.id)
+    .then(user => {
+      res.json({ username: user.username })
+    })
+    .catch(e => {
+      console.error(e)
+      res.sendStatus(500)
+    })
+})
+
+app.post('/logout', (req, res) => {
+  res.cookie('token', '').send()
 })
 
 app.listen(4000)

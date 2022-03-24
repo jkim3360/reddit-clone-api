@@ -56,6 +56,3 @@ app.post('/register', (req, res) => {
 })
 
 app.listen(4000)
-
-// 3/23/22
-// https://youtu.be/H0bSLIBYaAI?t=6203

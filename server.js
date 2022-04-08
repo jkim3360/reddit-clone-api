@@ -5,6 +5,8 @@ import mongoose from 'mongoose'
 import cors from 'cors'
 import bcrypt from 'bcrypt'
 import User from './models/User.js'
+import Post from './models/Post.js'
+import Comment from './models/Comment.js'
 import jwt from 'jsonwebtoken'
 
 const secret = 'secret1234567'
@@ -90,6 +92,26 @@ app.get('/user', (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.cookie('token', '').send()
+})
+
+app.get('/posts', (req, res) => {
+  Post.find().then(posts => {
+    console.log(posts)
+    res.send(posts)
+  })
+})
+
+app.get('/comments', (req, res) => {
+  Comment.find().then(comments => {
+    console.log(comments)
+    res.send(comments)
+  })
+})
+
+app.get('/comments/:id', (req, res) => {
+  Comment.findById(req.params.id).then(comment => {
+    res.json(comment)
+  })
 })
 
 app.listen(4000)

@@ -46,7 +46,6 @@ app.post('/register', (req, res) => {
           console.error(err)
           res.sendStatus(500)
         } else {
-          console.log(user)
           res.status(201).cookie('token', token).send()
         }
       })
@@ -77,17 +76,34 @@ app.post('/login', (req, res) => {
 
 app.get('/user', (req, res) => {
   const token = req.cookies.token
-  console.log({ token })
   const userInfo = jwt.verify(token, secret)
 
   User.findById(userInfo.id)
     .then(user => {
-      res.json({ username: user.username })
+      res.json({ username: user.username, id: user._id })
     })
     .catch(e => {
       console.error(e)
       res.sendStatus(500)
     })
+})
+
+app.put('/user', function (req, res) {
+  const userId = req.body.userId
+  const commentId = req.body.commentId
+
+  console.log(commentId)
+  User.findByIdAndUpdate(
+    userId,
+    { $push: { commentIds: commentId } },
+    (err, result) => {
+      if (err) {
+        console.error(err)
+      } else {
+        res.send(result)
+      }
+    }
+  )
 })
 
 app.post('/logout', (req, res) => {
@@ -96,14 +112,30 @@ app.post('/logout', (req, res) => {
 
 app.get('/posts', (req, res) => {
   Post.find().then(posts => {
-    console.log(posts)
     res.send(posts)
   })
 })
 
+app.post('/comment', (req, res) => {
+  const { userId, user, title, textarea } = req.body
+  const body = textarea
+  const author = user
+  const postedAt = new Date()
+  const post = new Comment({ author, userId, title, postedAt, body })
+  post
+    .save()
+    .then(post => {
+      res.json(post)
+      res.status(201)
+    })
+    .catch(e => {
+      console.error(e)
+      res.sendStatus(500)
+    })
+})
+
 app.get('/comments', (req, res) => {
   Comment.find().then(comments => {
-    console.log(comments)
     res.send(comments)
   })
 })
@@ -115,3 +147,5 @@ app.get('/comments/:id', (req, res) => {
 })
 
 app.listen(4000)
+
+// https://youtu.be/UUF-N3BUa5k?t=2133

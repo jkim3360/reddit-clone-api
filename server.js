@@ -77,7 +77,6 @@ app.post('/login', (req, res) => {
 app.get('/user', (req, res) => {
   const token = req.cookies.token
   const userInfo = jwt.verify(token, secret)
-
   User.findById(userInfo.id)
     .then(user => {
       res.json({ username: user.username, id: user._id })
@@ -116,12 +115,12 @@ app.get('/posts', (req, res) => {
   })
 })
 
-app.post('/comment', (req, res) => {
+app.post('/post', (req, res) => {
   const { userId, user, title, textarea } = req.body
   const body = textarea
   const author = user
   const postedAt = new Date()
-  const post = new Comment({ author, userId, title, postedAt, body })
+  const post = new Post({ author, userId, title, postedAt, body })
   post
     .save()
     .then(post => {
@@ -134,18 +133,16 @@ app.post('/comment', (req, res) => {
     })
 })
 
-app.get('/comments', (req, res) => {
-  Comment.find().then(comments => {
+app.get('/posts', (req, res) => {
+  Post.find().then(comments => {
     res.send(comments)
   })
 })
 
-app.get('/comments/:id', (req, res) => {
-  Comment.findById(req.params.id).then(comment => {
+app.get('/posts/:id', (req, res) => {
+  Post.findById(req.params.id).then(comment => {
     res.json(comment)
   })
 })
 
 app.listen(4000)
-
-// https://youtu.be/UUF-N3BUa5k?t=2133
